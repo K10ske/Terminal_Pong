@@ -9,6 +9,7 @@ int main(){
 	initscr();
 
 	endwin();
+	return 0;
 }
 
 WINDOW *create_newwin(int height, int width, int starty, int startx)
