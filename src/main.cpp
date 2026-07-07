@@ -9,13 +9,17 @@ int main(){
 	initscr();
 	WINDOW *win;
 	win = create_newwin(25,50,1,0);
+	start_color();
+	curs_set(0);
 	init_pair(1,COLOR_GREEN,COLOR_BLACK);
 
 	refresh();
 	nodelay(win,TRUE);
 	char player = '|';
+	wbkgd(win,COLOR_PAIR(1) | ' ');
 	box(win,'|','=');
 	mvwaddch(win, getmaxy(win)/2,2,player);
+	
 	wrefresh(win);
 	refresh();
 	getch();
