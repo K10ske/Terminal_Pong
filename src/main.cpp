@@ -7,7 +7,18 @@ void destroy_win(WINDOW *local_win);
 
 int main(){
 	initscr();
+	WINDOW *win;
+	win = create_newwin(25,50,1,0);
+	init_pair(1,COLOR_GREEN,COLOR_BLACK);
 
+	refresh();
+	nodelay(win,TRUE);
+	char player = '|';
+	box(win,'|','=');
+	mvwaddch(win, getmaxy(win)/2,2,player);
+	wrefresh(win);
+	refresh();
+	getch();
 	endwin();
 	return 0;
 }
