@@ -7,22 +7,83 @@ void destroy_win(WINDOW *local_win);
 
 int main(){
 	initscr();
-	WINDOW *win;
-	win = create_newwin(25,50,1,0);
 	start_color();
-	curs_set(0);
 	init_pair(1,COLOR_GREEN,COLOR_BLACK);
+	WINDOW *win;
+	WINDOW *ins;
+	ins = newwin(1,50,0,0);
+	win = create_newwin(25,50,1,0);
+	
+	curs_set(0);
+	keypad(win,TRUE);
+	
 
-	refresh();
+	
 	nodelay(win,TRUE);
 	char player = '|';
+	char ball = 'o';
+	int px, py[3];
+	int bx, by;
+	int press;
+	bool loop = TRUE;
+
 	wbkgd(win,COLOR_PAIR(1) | ' ');
+	wbkgd(ins,COLOR_PAIR(1) | ' ');
 	box(win,'|','=');
-	mvwaddch(win, getmaxy(win)/2,2,player);
 	
-	wrefresh(win);
-	refresh();
-	getch();
+	px = 2;
+	py[0] = getmaxy(win)/2;
+	py[1] = py[0] + 1;
+	py[2] = py[0] - 1;
+	bx = getmaxx(win)/2;
+	by = getmaxy(win)/2;
+	//Controls
+	while (loop){
+		
+		press = wgetch(win);
+		switch (press){
+		case KEY_UP:
+			if(py[2] == 1){
+				break;
+			}else{
+				py[0] += -1;
+				py[1] = py[0] + 1;
+				py[2] = py[0] - 1;
+				break;
+			}
+
+		case KEY_DOWN:
+			if(py[1] == getmaxy(win)-2){
+				break;
+			}else{
+				py[0] += 1;
+				py[1] = py[0] + 1;
+				py[2] = py[0] - 1;
+				break;
+			}
+		
+		case KEY_F(1):
+			loop = FALSE;
+			break;
+		}
+
+		werase(win);
+		box(win,'|','=');
+		
+		for (size_t i = 0; i <= 2; i++){
+
+			mvwaddch(win, py[i], px, player);
+		}
+
+		mvwaddch(win, by, bx, ball);
+		mvwaddstr(ins,0,0,"[Press F1 to quit]");
+		wrefresh(ins);
+		
+
+	}
+	
+
+	
 	endwin();
 	return 0;
 }
@@ -31,7 +92,7 @@ WINDOW *create_newwin(int height, int width, int starty, int startx)
 {	WINDOW *local_win;
 
 	local_win = newwin(height, width, starty, startx);
-	box(local_win, 0 , 0);		/* 0, 0 gives default characters 
+	box(local_win, ' ' , ' ');		/* 0, 0 gives default characters 
 					 * for the vertical and horizontal
 					 * lines			*/
 	wrefresh(local_win);		/* Show that box 		*/
