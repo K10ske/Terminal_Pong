@@ -22,8 +22,10 @@ int main(){
 	nodelay(win,TRUE);
 	char player = '|';
 	char ball = 'o';
+	int frames= 0;
 	int px, py[3];
 	int bx, by;
+	int bxDirection, byDirection;
 	int press;
 	bool loop = TRUE;
 
@@ -37,8 +39,12 @@ int main(){
 	py[2] = py[0] - 1;
 	bx = getmaxx(win)/2;
 	by = getmaxy(win)/2;
-	//Controls
+	bxDirection = 1;
+	byDirection = 0;
+	
 	while (loop){
+		
+		//Controls for the player paddle
 		
 		press = wgetch(win);
 		switch (press){
@@ -67,6 +73,37 @@ int main(){
 			break;
 		}
 
+		//Ball Movement
+
+		
+
+
+		
+		bx += bxDirection;
+		by += byDirection;
+
+		if(bx == getmaxx(win) - 2){
+			bxDirection = -1;
+		}else if (bx == 1){
+			bxDirection = 1;
+		}
+
+		
+		if(by == getmaxy(win) - 2){
+			byDirection = -1;
+		}else if (by == 1){
+			byDirection = 1;
+		}
+
+		for (size_t i = 0; i <= 2; i++)
+		{
+			if(bx == px + 1 && by == py[i]){
+				bxDirection = 1;
+			}
+		}
+		
+		
+
 		werase(win);
 		box(win,'|','=');
 		
@@ -74,12 +111,13 @@ int main(){
 
 			mvwaddch(win, py[i], px, player);
 		}
-
 		mvwaddch(win, by, bx, ball);
-		mvwaddstr(ins,0,0,"[Press F1 to quit]");
-		wrefresh(ins);
 		
-
+		mvwaddstr(ins,0,0,"[Press F1 to quit]");
+		mvwprintw(ins,0,21,"%d",bx);
+		mvwprintw(ins,0,24,"%d",by);
+		wrefresh(ins);
+		usleep(50000);
 	}
 	
 
