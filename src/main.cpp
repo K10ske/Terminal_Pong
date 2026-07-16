@@ -2,6 +2,7 @@
 #include <unistd.h>
 
 using namespace std;
+
 WINDOW *create_newwin(int height, int width, int starty, int startx);
 void destroy_win(WINDOW *local_win);
 
@@ -11,19 +12,19 @@ int main(){
 	init_pair(1,COLOR_GREEN,COLOR_BLACK);
 	WINDOW *win;
 	WINDOW *ins;
-	ins = newwin(1,50,0,0);
-	win = create_newwin(25,50,1,0);
+	ins = newwin(1,80,0,0);
+	win = create_newwin(25,80,1,0);
 	
 	curs_set(0);
 	keypad(win,TRUE);
 	
-
 	
 	nodelay(win,TRUE);
 	char player = '|';
+	char enemy = '|';
 	char ball = 'o';
-	int frames= 0;
-	int px, py[3];
+	int frames = 0;
+	int px, py[3], ex, ey[3], eyDirection;
 	int bx, by;
 	int bxDirection, byDirection;
 	int press;
@@ -37,15 +38,19 @@ int main(){
 	py[0] = getmaxy(win)/2;
 	py[1] = py[0] + 1;
 	py[2] = py[0] - 1;
+	ex = getmaxx(win) - 3;
+	ey[0] = getmaxy(win)/2;
+	ey[1] = ey[0] + 1;
+	ey[2] = ey[0] - 1;
+	eyDirection = -1;
 	bx = getmaxx(win)/2;
 	by = getmaxy(win)/2;
 	bxDirection = 1;
-	byDirection = 0;
+	byDirection = 1;
 	
 	while (loop){
 		
 		//Controls for the player paddle
-		
 		press = wgetch(win);
 		switch (press){
 		case KEY_UP:
@@ -72,13 +77,37 @@ int main(){
 			loop = FALSE;
 			break;
 		}
+		
+		//Enemy paddle movement
+		switch (eyDirection)
+		{
+		case -1:
+			if(ey[2] == 1){
+				break;
+			}else{
+				ey[0] += eyDirection;
+				ey[1] = ey[0] + 1;
+				ey[2] = ey[0] - 1;
+				break;
+			}
+		
+		case 1:
+			if(ey[1] == getmaxy(win)-2){
+				break;
+			}else{
+				ey[0] += eyDirection;
+				ey[1] = ey[0] + 1;
+				ey[2] = ey[0] - 1;
+				break;
+			}	
+
+		default:
+			break;
+		}
+		
+		
 
 		//Ball Movement
-
-		
-
-
-		
 		bx += bxDirection;
 		by += byDirection;
 
@@ -95,27 +124,37 @@ int main(){
 			byDirection = 1;
 		}
 
+		eyDirection = byDirection;
+		
+
 		for (size_t i = 0; i <= 2; i++)
 		{
 			if(bx == px + 1 && by == py[i]){
 				bxDirection = 1;
 			}
+			if (bx == ex - 1 && by == ey[i]){
+				bxDirection = -1 ;
+			}
 		}
 		
 		
-
+		
+		//Updates the screen
 		werase(win);
 		box(win,'|','=');
 		
 		for (size_t i = 0; i <= 2; i++){
 
 			mvwaddch(win, py[i], px, player);
+			mvwaddch(win, ey[i], ex, enemy);
 		}
 		mvwaddch(win, by, bx, ball);
 		
 		mvwaddstr(ins,0,0,"[Press F1 to quit]");
 		mvwprintw(ins,0,21,"%d",bx);
 		mvwprintw(ins,0,24,"%d",by);
+		mvwprintw(ins,0,50,"%d",ey[2]);
+		mvwprintw(ins,0,70,"%d",py[2]);
 		wrefresh(ins);
 		usleep(50000);
 	}
