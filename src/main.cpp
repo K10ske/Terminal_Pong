@@ -191,7 +191,9 @@ int main(){
 			}
 		}
 		
-		
+		if(score[0] == 10 || score [1] == 10){
+			loop = FALSE;
+		}
 		
 		//Updates the screen
 		werase(win);
